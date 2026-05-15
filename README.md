@@ -125,18 +125,3 @@ See `[agent/prompts.py](agent/prompts.py)`. The system prompt forces this loop:
 7. (Optional) `web_search` for ticket prices or other off-Maps facts.
 8. Final reply: numbered itinerary + Google Maps link.
 
-## When things break
-
-**No results / blank cards** → Google likely changed selectors. Edit `config/selectors.py`. The current targets prefer ARIA / role-based locators, but the rating/review/address chips inside result cards still rely on class names because Maps doesn't expose role-tagged equivalents.
-
-**CAPTCHA appearing** → bump request gaps (`await page.wait_for_timeout(...)`) and confirm `playwright-stealth` was applied (`await stealth_async(page)` must run before any `goto`).
-
-**Timeouts on busy pages** → raise `PLAYWRIGHT_TIMEOUT_MS` in `.env`.
-
-## Limitations (MVP)
-
-- No conversation memory — each message is an independent agent run.
-- One-day trips only. Multi-day requires the agent to pick lodging and split waypoints, which is not in the current prompt.
-- Fuel prices are hardcoded, not scraped live.
-- Anti-bot resilience tested only against light volume (1 user). Heavy parallel use may trigger Google CAPTCHA — switch contexts (`fresh_context=True` in `playwright_manager`) or back off.
-
